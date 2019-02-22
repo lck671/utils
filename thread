@@ -1,0 +1,11 @@
+(define thread-pool-size 10)
+(define make-thread
+    (let ((thread-pool (make-vector thread-pool-size)))
+       (lambda (thunk)
+           (let loop ((ix 0))
+              (cond ((= ix thread-pool-size)
+                        (loop 0))
+                    ((thread-dead? (vector-ref thread-pool ix))
+                     (vector-set! thread-pool ix (thread thunk))
+                     (vector-ref thread-pool ix))
+                    (else (loop (add1 ix))))))))
